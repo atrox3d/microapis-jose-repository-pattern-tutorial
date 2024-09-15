@@ -18,6 +18,7 @@ class BookingRepository:
                 party_size=party_size,
             )
         self.session.add(booking)
+        print(f'{self.session = }')
         return booking
 
     def update(self, **kwargs):

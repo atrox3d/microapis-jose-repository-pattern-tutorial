@@ -44,9 +44,11 @@ def get_bookings(request:Request):
         }
 
 
-@router.post("/bookings", status_code=status.HTTP_201_CREATED, response_model=BookingConfirmation)
+@router.post("/bookings", status_code=status.HTTP_201_CREATED, 
+             response_model=BookingConfirmation)
 def book_table(booking_details: BookTable, request:Request):
     with request.app.session_maker() as session:
+        print(f'{session = }')
         repo = BookingRepository(session)
         booking = repo.add(
                 restaurant=booking_details.restaurant,
@@ -54,9 +56,11 @@ def book_table(booking_details: BookTable, request:Request):
                 party_size=booking_details.party_size,
             )
         session.commit()
-        return {
+        return_value =  {
             "booking_id": booking.id,
             "restaurant": booking_details.restaurant,
             "party_size": booking.party_size,
             "date_time": booking.date_time,
         }
+        print(f'{return_value = }')
+        return return_value
