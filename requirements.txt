@@ -4,4 +4,4 @@ sqlalchemy
 requests
 pytest
 alembic
-
+httpx
