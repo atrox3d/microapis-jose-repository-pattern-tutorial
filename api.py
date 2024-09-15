@@ -2,10 +2,10 @@ import os
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from pydantic import BaseModel, conint
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
 from starlette import status
 
 from data_access.booking_repository import BookingRepository
@@ -31,12 +31,12 @@ class BookingsList(BaseModel):
     bookings: List[BookingConfirmation]
 
 
-session_maker = sessionmaker(bind=create_engine(os.getenv("DB_URL")))
+# session_maker = sessionmaker(bind=create_engine(os.getenv("DB_URL")))
 
 
 @router.get("/bookings", response_model=BookingsList)
-def get_bookings():
-    with session_maker() as session:
+def get_bookings(request:Request):
+    with request.app.session_maker() as session:
         repo = BookingRepository(session)
         bookings = repo.list()
         return {
@@ -45,8 +45,8 @@ def get_bookings():
 
 
 @router.post("/bookings", status_code=status.HTTP_201_CREATED, response_model=BookingConfirmation)
-def book_table(booking_details: BookTable):
-    with session_maker() as session:
+def book_table(booking_details: BookTable, request:Request):
+    with request.app.session_maker() as session:
         repo = BookingRepository(session)
         booking = repo.add(
                 restaurant=booking_details.restaurant,

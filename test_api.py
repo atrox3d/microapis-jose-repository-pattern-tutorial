@@ -6,7 +6,9 @@ from starlette.testclient import TestClient
 
 from server import create_server
 
-server = create_server()
+session_maker = sessionmaker(bind=create_engine(os.getenv("DB_URL")))
+
+server = create_server(session_maker=session_maker)
 
 test_client = TestClient(app=server)
 
