@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
+from data_access.booking_repository import BookingRepository
 from data_access.models import Booking
 
 router = APIRouter()
@@ -36,7 +37,8 @@ session_maker = sessionmaker(bind=create_engine(os.getenv("DB_URL")))
 @router.get("/bookings", response_model=BookingsList)
 def get_bookings():
     with session_maker() as session:
-        bookings = session.query(Booking).all()
+        repo = BookingRepository(session)
+        bookings = repo.list()
         return {
             "bookings": [booking.dict() for booking in bookings]
         }
@@ -45,12 +47,12 @@ def get_bookings():
 @router.post("/bookings", status_code=status.HTTP_201_CREATED, response_model=BookingConfirmation)
 def book_table(booking_details: BookTable):
     with session_maker() as session:
-        booking = Booking(
-                restaurant_id=booking_details.restaurant,
+        repo = BookingRepository(session)
+        booking = repo.add(
+                restaurant=booking_details.restaurant,
                 date_time=booking_details.date_time,
                 party_size=booking_details.party_size,
             )
-        session.add(booking)
         session.commit()
         return {
             "booking_id": booking.id,
