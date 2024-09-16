@@ -40,7 +40,8 @@ def get_bookings(request:Request):
         repo = BookingRepository(session)
         bookings = repo.list()
         return {
-            "bookings": [booking.dict() for booking in bookings]
+            # "bookings": [booking.dict() for booking in bookings]
+            'bookings': repo.list()
         }
 
 
@@ -56,11 +57,11 @@ def book_table(booking_details: BookTable, request:Request):
                 party_size=booking_details.party_size,
             )
         session.commit()
-        return_value =  {
-            "booking_id": booking.id,
-            "restaurant": booking_details.restaurant,
-            "party_size": booking.party_size,
-            "date_time": booking.date_time,
-        }
-        print(f'{return_value = }')
-        return return_value
+        # return_value =  {
+        #     "booking_id": booking.id,
+        #     "restaurant": booking_details.restaurant,
+        #     "party_size": booking.party_size,
+        #     "date_time": booking.date_time,
+        # }
+        # print(f'{return_value = }')
+        return booking.dict()

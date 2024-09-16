@@ -1,4 +1,5 @@
-from data_access.models import Booking
+from data_access import models
+from schemas import business
 from sqlalchemy.orm.session import Session
 
 class BookingRepository:
@@ -9,17 +10,23 @@ class BookingRepository:
         pass
 
     def list(self):
-        return self.session.query(Booking).all()
+        return [booking.dict() for booking in 
+                self.session.query(models.Booking).all()]
 
     def add(self, restaurant, date_time, party_size):
-        booking = Booking(
+        booking = models.Booking(
                 restaurant_id=restaurant,
                 date_time=date_time,
                 party_size=party_size,
             )
         self.session.add(booking)
         print(f'{self.session = }')
-        return booking
+        return business.Booking(
+            restaurant_id=restaurant,
+            date_time=date_time,
+            party_size=party_size,
+            _booking_record=booking
+        )
 
     def update(self, **kwargs):
         pass
